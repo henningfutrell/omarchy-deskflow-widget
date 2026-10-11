@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "deskflow",
+  "name": "Deskflow",
+  "version": "1.1.0",
+  "author": "Henning Futrell",
+  "license": "MIT",
+  "description": "Deskflow client or server status and on/off control in the Omarchy bar.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Deskflow",
+    "description": "Start or stop Deskflow and see who it is connected to. Works on both the server and the clients.",
+    "category": "Network",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "mode": "client",
+      "refreshIntervalSec": 5
+    },
+    "schema": [
+      {
+        "key": "mode",
+        "type": "enum",
+        "label": "Mode",
+        "options": [
+          "client",
+          "server"
+        ],
+        "defaultValue": "client",
+        "description": "client receives keyboard and mouse from another machine; server shares this machine's keyboard and mouse."
+      },
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 2,
+        "max": 300,
+        "step": 1,
+        "defaultValue": 5
+      }
+    ]
+  }
+}

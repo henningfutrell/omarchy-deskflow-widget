@@ -1,0 +1,12 @@
+[Unit]
+Description=Deskflow %i (keyboard and mouse sharing)
+PartOf=graphical-session.target
+After=graphical-session.target xdg-desktop-portal.service
+
+[Service]
+ExecStart=/usr/bin/deskflow-core %i
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
