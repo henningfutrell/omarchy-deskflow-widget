@@ -68,7 +68,24 @@ systemctl --user restart xdg-desktop-portal.service hypr-kdeconnect-portal.servi
 If you already have a `~/.config/xdg-desktop-portal/hyprland-portals.conf`,
 add only the `RemoteDesktop=` line to it instead.
 
-If the widget shows **Input bridge unavailable**, check the bridge's log:
+The bridge recognises Deskflow by reading `/proc/<pid>/exe`, but its default
+sandbox stops it from doing that. Without the override below, it refuses every
+session with `refusing RemoteDesktop session for app id ""`: the client connects
+and the cursor reaches its screen, but no input arrives. The override turns off
+that part of the sandbox for the bridge only. The bridge still accepts only
+`deskflow-core` and KDE Connect. (Fix from
+[omarchy-deskflow-kvm](https://github.com/hermany/omarchy-deskflow-kvm).)
+
+```sh
+mkdir -p ~/.config/systemd/user/hypr-kdeconnect-portal.service.d
+printf '[Service]\nPrivateTmp=no\nProtectSystem=no\nProtectHome=no\n' \
+  > ~/.config/systemd/user/hypr-kdeconnect-portal.service.d/override.conf
+systemctl --user daemon-reload
+systemctl --user restart hypr-kdeconnect-portal.service
+```
+
+If the client connects but no input arrives, check the bridge's log. You
+should see `allowing RemoteDesktop session … /usr/bin/deskflow-core`:
 
 ```sh
 journalctl --user -u hypr-kdeconnect-portal
