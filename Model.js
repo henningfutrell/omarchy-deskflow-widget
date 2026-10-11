@@ -16,6 +16,7 @@ function parseStatus(raw, mode) {
     else if (key === "host") status.host = value
     else if (key === "screen") status.screenName = value
     else if (key === "coremode") status.appMode = appMode(value)
+    else if (key === "clipboard") status.clipboard = value === "true"
     else if (key === "fingerprint") status.fingerprint = value
     else if (key === "pending") status.pendingFingerprint = value
     else if (key === "unknown") status.unknownClient = value
@@ -37,6 +38,7 @@ function defaultStatus() {
     host: "",
     screenName: "",
     appMode: "",
+    clipboard: false,
     fingerprint: "",
     pendingFingerprint: "",
     unknownClient: "",

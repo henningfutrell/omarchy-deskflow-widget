@@ -33,16 +33,21 @@ ini_set() { # section key value
   touch "$CONF"
   local tmp
   tmp=$(mktemp "$CONF.XXXXXX")
+  # Blank lines are held back so a new key lands before the gap that
+  # separates its section from the next one.
   awk -v s="[$1]" -v k="$2" -v v="$3" '
-    $0==s { print; insec=1; next }
-    /^\[/ { if (insec && !done) { print k "=" v; done=1 } insec=0 }
-    insec && index($0, k "=")==1 { if (!done) print k "=" v; done=1; next }
-    { print }
+    function flush() { for (; blanks > 0; blanks--) print "" }
+    $0==s { flush(); print; insec=1; next }
+    /^\[/ { if (insec && !done) { print k "=" v; done=1 } insec=0; flush(); print; next }
+    /^$/ { blanks++; next }
+    insec && index($0, k "=")==1 { flush(); if (!done) print k "=" v; done=1; next }
+    { flush(); print }
     END {
       if (!done) {
         if (!insec) { if (NR) print ""; print s }
         print k "=" v
       }
+      flush()
     }' "$CONF" >"$tmp" && mv "$tmp" "$CONF"
 }
 
@@ -142,6 +147,7 @@ status() { # mode
   echo "host=$(ini_get client remoteHost)"
   echo "screen=$(screen_name)"
   echo "coremode=$(ini_get core coreMode)"
+  echo "clipboard=$(ini_get core wlClipboard)"
   echo "fingerprint=$(own_fingerprint)"
   [[ -f $SCREENS ]] && while read -r name direction; do echo "layout=$name $direction"; done <"$SCREENS"
 
@@ -216,6 +222,15 @@ case "${1:-}" in
     is_trusted "$db" "$3" || echo "v2:sha256:${3,,}" >>"$db"
     restart_if_running "$2"
     ;;
+  set-clipboard)
+    # Deskflow shares the clipboard on Wayland through wl-copy/wl-paste, but
+    # only when this is on. Both machines need it.
+    [[ ${2:-} == true || ${2:-} == false ]] || die "Use true or false"
+    [[ $2 == false ]] || command -v wl-copy >/dev/null || die "Install wl-clipboard to share the clipboard"
+    ini_set core wlClipboard "$2"
+    restart_if_running client
+    restart_if_running server
+    ;;
   add-screen)
     valid_name "${2:-}" || die "Invalid screen name"
     valid_direction "${3:-}" || die "Invalid direction"
@@ -234,6 +249,6 @@ case "${1:-}" in
     restart_if_running server
     ;;
   *)
-    die "Usage: deskflowctl status|start|stop|enable|disable|set-mode|set-server|trust|add-screen|remove-screen"
+    die "Usage: deskflowctl status|start|stop|enable|disable|set-mode|set-server|set-clipboard|trust|add-screen|remove-screen"
     ;;
 esac

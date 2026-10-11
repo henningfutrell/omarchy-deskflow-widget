@@ -12,7 +12,7 @@ and behaves like the built-in Bluetooth or Tailscale widgets.
 - **Client:** enter the server's address
 - **Server:** place each client above, below, left or right, and remove it again
 - **Pairing:** trust the other machine after comparing fingerprints
-- Switch between client and server, and start on login
+- Share the clipboard, switch between client and server, and start on login
 
 ## Install
 
@@ -36,6 +36,8 @@ omarchy bar move deskflow --before omarchy.bluetooth
    client's **This machine** fingerprint and choose **Trust this client**.
 5. The server then asks where the client sits. Pick **Above**, **Below**,
    **Left** or **Right**.
+6. To copy on one machine and paste on the other, turn on **Share clipboard**
+   on both.
 
 To change a client's position later, remove it from **Clients** with its
 trash icon (or `x`). It reappears the next time that client connects.
@@ -116,6 +118,7 @@ In the panel:
 | `x` / `delete` | Remove the selected client |
 | `t` | Turn Deskflow on or off |
 | `m` | Switch between client and server |
+| `c` | Toggle clipboard sharing |
 | `a` | Toggle start on login |
 | `r` | Refresh |
 | `esc` | Close |

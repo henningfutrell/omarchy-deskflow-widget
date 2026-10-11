@@ -46,6 +46,7 @@ Panel {
       for (var i = 0; i < deskflow.layout.length; i++) items.push({ kind: "screen", name: deskflow.layout[i].name })
     }
     items.push({ kind: "mode" })
+    items.push({ kind: "clipboard" })
     items.push({ kind: "autostart" })
     return items
   }
@@ -84,6 +85,7 @@ Panel {
     else if (kind === "trust") deskflow.trustPending()
     else if (kind === "place") deskflow.addScreen(deskflow.unknownClient, directions[placeIndex])
     else if (kind === "mode") deskflow.toggleMode()
+    else if (kind === "clipboard") deskflow.toggleClipboard()
     else if (kind === "autostart") deskflow.toggleAutostart()
   }
 
@@ -166,6 +168,7 @@ Panel {
         else if (t === "r" || t === "R") deskflow.refresh()
         else if (t === "m" || t === "M") deskflow.toggleMode()
         else if (t === "a" || t === "A") deskflow.toggleAutostart()
+        else if (t === "c" || t === "C") deskflow.toggleClipboard()
         else if (t === "x" || t === "X") root.removeCursor()
       }
 
@@ -391,6 +394,22 @@ Panel {
                   color: root.dim
                   font.family: root.fontFamily
                   font.pixelSize: Style.font.icon
+                }
+              }
+            }
+
+            ActionRow {
+              kind: "clipboard"
+              glyph: "󰅍"
+              title: "Share clipboard"
+              subtitle: deskflow.clipboard ? "Copy on one machine, paste on the other" : "Turn on for both machines"
+              onActivated: deskflow.toggleClipboard()
+              trailing: Component {
+                ToggleSwitch {
+                  checked: deskflow.clipboard
+                  busy: deskflow.busy
+                  interactive: false
+                  foreground: root.foreground
                 }
               }
             }

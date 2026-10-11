@@ -15,6 +15,7 @@ Item {
   property string host: ""
   property string screenName: ""
   property string appMode: ""
+  property bool clipboard: false
   property string fingerprint: ""
   property string pendingFingerprint: ""
   property string unknownClient: ""
@@ -64,6 +65,7 @@ Item {
     var parsed = Model.parseStatus(raw, mode)
     var modeBefore = mode
     appMode = parsed.appMode
+    clipboard = parsed.clipboard
     installed = parsed.installed
     running = parsed.running
     autostart = parsed.autostart
@@ -100,6 +102,7 @@ Item {
   function stop() { run(["stop", mode], 0) }
   function toggleRunning() { active ? stop() : start() }
   function toggleAutostart() { run([autostart ? "disable" : "enable", mode]) }
+  function toggleClipboard() { run(["set-clipboard", clipboard ? "false" : "true"]) }
   function setMode(newMode) { if (newMode !== mode) run(["set-mode", newMode], -1) }
   function toggleMode() { setMode(isServer ? "client" : "server") }
   function setServer(address) { run(["set-server", String(address || "").trim()]) }
