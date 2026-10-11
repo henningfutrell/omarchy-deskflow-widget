@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "deskflow",
   "name": "Deskflow",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "author": "Henning Futrell",
   "license": "MIT",
-  "description": "Deskflow client or server status and on/off control in the Omarchy bar.",
+  "description": "Deskflow keyboard and mouse sharing, set up and controlled entirely from the Omarchy bar.",
   "kinds": [
     "bar-widget"
   ],
@@ -14,12 +14,12 @@
   },
   "barWidget": {
     "displayName": "Deskflow",
-    "description": "Start or stop Deskflow and see who it is connected to. Works on both the server and the clients.",
+    "description": "Run Deskflow as client or server, set the server, place clients, and trust fingerprints without opening the Deskflow app.",
     "category": "Network",
     "allowMultiple": false,
     "defaultSection": "right",
     "defaults": {
-      "mode": "client",
+      "mode": "auto",
       "refreshIntervalSec": 5
     },
     "schema": [
@@ -28,11 +28,12 @@
         "type": "enum",
         "label": "Mode",
         "options": [
+          "auto",
           "client",
           "server"
         ],
-        "defaultValue": "client",
-        "description": "client receives keyboard and mouse from another machine; server shares this machine's keyboard and mouse."
+        "defaultValue": "auto",
+        "description": "auto follows the mode chosen in the Deskflow app. client receives keyboard and mouse from another machine; server shares this machine's keyboard and mouse."
       },
       {
         "key": "refreshIntervalSec",
