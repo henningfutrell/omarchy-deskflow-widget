@@ -89,7 +89,14 @@ Item {
     controlProcess.running = true
   }
 
-  function start() { run(["start", mode], 1) }
+  // `address` is the panel's unsaved server field, so starting never ignores
+  // what is on screen.
+  function start(address) {
+    var args = ["start", mode]
+    var pending = String(address || "").trim()
+    if (!isServer && pending !== "" && pending !== host) args.push(pending)
+    run(args, 1)
+  }
   function stop() { run(["stop", mode], 0) }
   function toggleRunning() { active ? stop() : start() }
   function toggleAutostart() { run([autostart ? "disable" : "enable", mode]) }

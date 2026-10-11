@@ -92,7 +92,9 @@ Panel {
   }
 
   function toggleRunning() {
-    if (deskflow.installed && !deskflow.busy) deskflow.toggleRunning()
+    if (!deskflow.installed || deskflow.busy) return
+    if (deskflow.active) deskflow.stop()
+    else deskflow.start(serverField.text)
   }
 
   implicitWidth: button.implicitWidth
@@ -262,10 +264,9 @@ Panel {
               hasCursor: root.hasCursor("server-field")
               text: deskflow.host
               onActiveFocusChanged: if (activeFocus) root.setCursor("server-field")
-              onAccepted: {
-                if (text.trim() !== deskflow.host) deskflow.setServer(text)
-                keyCatcher.forceActiveFocus()
-              }
+              // Enter or clicking away both save.
+              onEditingFinished: if (text.trim() !== "" && text.trim() !== deskflow.host) deskflow.setServer(text)
+              onAccepted: keyCatcher.forceActiveFocus()
               Keys.onEscapePressed: {
                 text = deskflow.host
                 keyCatcher.forceActiveFocus()

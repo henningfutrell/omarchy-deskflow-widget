@@ -182,9 +182,21 @@ case "${1:-}" in
       # Only one mode runs at a time.
       systemctl --user stop "$(unit_for "$([[ $2 == server ]] && echo client || echo server)")" 2>/dev/null
       [[ $2 == server && ! -f $SERVER_CONF ]] && write_layout
+      # The panel passes whatever is in its address field, saved or not.
+      if [[ $2 == client && -n ${3:-} ]]; then
+        valid_host "$3" || die "That doesn't look like a server address"
+        ini_set client remoteHost "$3"
+      fi
       [[ $2 == client && -z $(ini_get client remoteHost) ]] && die "Enter the server address first"
     fi
     systemctl --user "$1" "$(unit_for "$2")"
+    [[ $1 == start ]] || exit 0
+    # A unit that dies straight away should say why rather than look started.
+    sleep 1
+    if ! systemctl --user is-active --quiet "$(unit_for "$2")"; then
+      journalctl --user -u "$(unit_for "$2")" -n 20 -o cat --no-pager | grep -E 'FATAL|ERROR' | tail -n 1 | sed 's/^\[[^]]*\] //' >&2
+      exit 1
+    fi
     ;;
   set-mode)
     [[ ${2:-} == server || ${2:-} == client ]] || die "Unknown mode"
